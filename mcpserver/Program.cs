@@ -4,7 +4,7 @@ using AiOps.McpServer.Services;
 using AiOps.McpServer.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ModelContextProtocol.Server;
+using ModelContextProtocol;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -17,6 +17,6 @@ builder.Services
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
-    .WithTools<LogAnalysisTool>();
+    .WithTool<LogAnalysisTool>();
 
 await builder.Build().RunAsync();
