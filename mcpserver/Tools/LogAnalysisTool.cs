@@ -3,10 +3,11 @@ using System.Text.Json;
 using AiOps.McpServer.Models;
 using AiOps.McpServer.Repositories;
 using AiOps.McpServer.Services;
-using ModelContextProtocol;
+using ModelContextProtocol.Server;
 
 namespace AiOps.McpServer.Tools;
 
+[McpToolType]
 public sealed class LogAnalysisTool(
     ILogRepositoryFactory repositoryFactory,
     MarkdownReportGenerator reportGenerator)
@@ -19,7 +20,7 @@ public sealed class LogAnalysisTool(
 
     // ── Tool: list_log_repositories ──────────────────────────────────────────
 
-    [McpServerTool]
+    [McpTool("list_log_repositories")]
     [Description(
         "Lists all configured log repositories available for querying. " +
         "Call this first to discover which repository names can be passed to the other tools.")]
@@ -38,7 +39,7 @@ public sealed class LogAnalysisTool(
 
     // ── Tool: query_log_errors ───────────────────────────────────────────────
 
-    [McpServerTool]
+    [McpTool("query_log_errors")]
     [Description(
         "Queries a configured log repository for errors and exceptions within a time window. " +
         "Returns a JSON array of log entries with timestamps, levels, messages, exception types, " +
@@ -110,7 +111,7 @@ public sealed class LogAnalysisTool(
 
     // ── Tool: generate_analysis_report ───────────────────────────────────────
 
-    [McpServerTool]
+    [McpTool("generate_analysis_report")]
     [Description(
         "Queries a log repository for errors and generates a comprehensive Markdown analysis report. " +
         "The report includes an executive summary, per-exception-type breakdowns with stack traces, " +
