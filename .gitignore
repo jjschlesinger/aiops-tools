@@ -1,0 +1,33 @@
+# .NET build artefacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+packages/
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# VS Code (keep shared settings, ignore personal ones)
+.vscode/launch.json
+.vscode/.ropeproject
+
+# Claude Code — local-only settings must not be shared
+**/.claude/settings.local.json
+
+# Environment / secrets
+.env
+.env.*
+appsettings.*.json
+!appsettings.json
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AiOps.McpServer</RootNamespace>
+    <AssemblyName>AiOps.McpServer</AssemblyName>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <!--
+    Run `dotnet add package ModelContextProtocol - -prerelease` to get the latest preview build.
+    Update the version below to match what `dotnet add package` resolves.
+  -->
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
+    <PackageReference Include="Azure.Monitor.Query" Version="1.4.0" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
+
+    <!--
+      SQL provider packages — include only the one(s) you need.
+      Each provider auto-registers itself with DbProviderFactories on load,
+      so no extra setup is required beyond adding the package reference.
+
+        SQL Server / Azure SQL  →  Microsoft.Data.SqlClient   (ProviderName: "Microsoft.Data.SqlClient", SqlDialect: "SqlServer")
+        PostgreSQL              →  Npgsql                     (ProviderName: "Npgsql",                   SqlDialect: "Ansi")
+        MySQL / MariaDB         →  MySqlConnector             (ProviderName: "MySqlConnector",           SqlDialect: "MySql")
+        SQLite                  →  Microsoft.Data.Sqlite      (ProviderName: "Microsoft.Data.Sqlite",    SqlDialect: "Ansi")
+    -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <!-- <PackageReference Include="Npgsql"                Version="8.0.5" /> -->
+    <!-- <PackageReference Include="MySqlConnector"        Version="2.3.7" /> -->
+    <!-- <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" /> -->
+  </ItemGroup>
+
+</Project>
