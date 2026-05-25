@@ -1,4 +1,4 @@
-using AiOps.McpServer.Configuration;
+using AiOps.McpServer.Extensions;
 using AiOps.McpServer.Repositories;
 using AiOps.McpServer.Services;
 using AiOps.McpServer.Tools;
@@ -9,8 +9,7 @@ using ModelContextProtocol;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services
-    .Configure<LogRepositorySettings>(
-        builder.Configuration.GetSection("LogRepositories"))
+    .AddLogRepositories(builder.Configuration)
     .AddSingleton<ILogRepositoryFactory, LogRepositoryFactory>()
     .AddSingleton<MarkdownReportGenerator>();
 

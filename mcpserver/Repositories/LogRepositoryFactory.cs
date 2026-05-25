@@ -1,32 +1,15 @@
-using AiOps.McpServer.Configuration;
-using Microsoft.Extensions.Options;
-
 namespace AiOps.McpServer.Repositories;
 
-public sealed class LogRepositoryFactory(IOptionsMonitor<LogRepositorySettings> settingsMonitor)
-    : ILogRepositoryFactory
+public sealed class LogRepositoryFactory(IEnumerable<ILogRepository> repositories) : ILogRepositoryFactory
 {
-    public ILogRepository GetRepository(string name)
-    {
-        var repos = settingsMonitor.CurrentValue.Repositories;
+    private readonly IReadOnlyList<ILogRepository> _repositories = repositories.ToList();
 
-        if (!repos.TryGetValue(name, out var config))
-            throw new InvalidOperationException(
-                $"No log repository configured with name '{name}'. " +
-                $"Available: {string.Join(", ", repos.Keys)}");
-
-        return config.Type switch
-        {
-            "SerilogFile" => new SerilogFileLogRepository(name, config),
-            "Sql" => new SqlLogRepository(name, config),
-            "AzureMonitor" => new AzureMonitorLogRepository(name, config),
-            _ => throw new InvalidOperationException(
-                $"Unknown repository type '{config.Type}' for '{name}'. " +
-                $"Supported types: SerilogFile, Sql, AzureMonitor")
-        };
-    }
+    public ILogRepository GetRepository(string name) =>
+        _repositories.FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+        ?? throw new InvalidOperationException(
+            $"No log repository registered with name '{name}'. " +
+            $"Registered: {string.Join(", ", _repositories.Select(r => r.Name))}");
 
     public IReadOnlyDictionary<string, string> GetAvailableRepositories() =>
-        settingsMonitor.CurrentValue.Repositories
-            .ToDictionary(kv => kv.Key, kv => kv.Value.Type, StringComparer.OrdinalIgnoreCase);
+        _repositories.ToDictionary(r => r.Name, r => r.RepositoryType, StringComparer.OrdinalIgnoreCase);
 }
