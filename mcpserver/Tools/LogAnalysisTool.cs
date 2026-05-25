@@ -3,11 +3,10 @@ using System.Text.Json;
 using AiOps.McpServer.Models;
 using AiOps.McpServer.Repositories;
 using AiOps.McpServer.Services;
-using ModelContextProtocol.Server;
+using ModelContextProtocol;
 
 namespace AiOps.McpServer.Tools;
 
-[McpServerToolType]
 public sealed class LogAnalysisTool(
     ILogRepositoryFactory repositoryFactory,
     MarkdownReportGenerator reportGenerator)
