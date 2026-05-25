@@ -1,33 +1,97 @@
-# .NET build artefacts
-bin/
-obj/
-*.user
-*.suo
-.vs/
+# ─── .NET build output ────────────────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+out/
+publish/
 
-# NuGet
+# .NET CLI artefacts
+*.binlog
+*.sarif
+
+# ─── NuGet ────────────────────────────────────────────────────────────────────
 *.nupkg
 *.snupkg
+*.nuget.props
+*.nuget.targets
 project.lock.json
+project.fragment.lock.json
 packages/
+# Restore cache — regenerated on `dotnet restore`
+!**/packages/build/
+.nuget/
 
-# Rider / JetBrains
-.idea/
-*.DotSettings.user
+# ─── Visual Studio ────────────────────────────────────────────────────────────
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+*.VC.opendb
 
-# VS Code (keep shared settings, ignore personal ones)
+# Crash dumps
+*.dmp
+
+# Windows image file caches
+[Tt]humbs.db
+[Tt]humbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# MSBuild outputs that belong in obj/ but sometimes escape
+*.cache
+!**/.gitkeep
+
+# Publish profiles
+**/Properties/PublishProfiles/
+
+# ─── VS Code ──────────────────────────────────────────────────────────────────
+# Keep: .vscode/tasks.json, .vscode/extensions.json (shared dev config)
+# Ignore: personal/machine-specific files
 .vscode/launch.json
+.vscode/settings.json
+.vscode/.browse.VC.db*
+.vscode/ipch/
 .vscode/.ropeproject
 
-# Claude Code — local-only settings must not be shared
+# ─── JetBrains Rider ──────────────────────────────────────────────────────────
+.idea/
+*.DotSettings.user
+# Rider project files — keep .DotSettings (shared code style), ignore personal
+*.sln.iml
+
+# ─── Claude Code ──────────────────────────────────────────────────────────────
 **/.claude/settings.local.json
 
-# Environment / secrets
+# ─── Test results & coverage ──────────────────────────────────────────────────
+TestResults/
+coverage*/
+*.trx
+*.coverage
+*.coveragexml
+lcov.info
+
+# ─── Secrets / environment ────────────────────────────────────────────────────
 .env
 .env.*
+**/secrets.json
+# Keep the base config; ignore environment overrides
 appsettings.*.json
 !appsettings.json
 
-# OS
+# ─── macOS ────────────────────────────────────────────────────────────────────
 .DS_Store
-Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
