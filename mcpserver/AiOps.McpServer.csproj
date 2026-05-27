@@ -16,7 +16,7 @@
     Update the version below to match what `dotnet add package` resolves.
   -->
   <ItemGroup>
-    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.1" />
+    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.1.25171.12" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
     <PackageReference Include="Azure.Monitor.Query" Version="1.4.0" />
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
@@ -36,6 +36,10 @@
     <!-- <PackageReference Include="Npgsql"                Version="8.0.5" /> -->
     <!-- <PackageReference Include="MySqlConnector"        Version="2.3.7" /> -->
     <!-- <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AiOps.McpServer.Tests" />
   </ItemGroup>
 
 </Project>

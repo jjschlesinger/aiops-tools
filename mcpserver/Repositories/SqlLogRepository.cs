@@ -79,7 +79,7 @@ public sealed class SqlLogRepository(string name, LogRepositoryConfig config)
 
     // ── Query builder ─────────────────────────────────────────────────────────
 
-    private string BuildQuery(LogQueryOptions options)
+    internal string BuildQuery(LogQueryOptions options)
     {
         var (oq, cq) = DialectQuotes(config.SqlDialect);
         var isSqlServer = config.SqlDialect.Equals("SqlServer", StringComparison.OrdinalIgnoreCase);
