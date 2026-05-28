@@ -36,7 +36,11 @@ cd ../agent
 dotnet run          # agent spawns mcpserver automatically
 ```
 
-To wire it to Claude Desktop, add an entry to your MCP config:
+### Claude Desktop
+
+Add an entry to `claude_desktop_config.json`
+(macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`,
+Windows: `%APPDATA%\Claude\claude_desktop_config.json`):
 
 ```json
 {
@@ -48,6 +52,52 @@ To wire it to Claude Desktop, add an entry to your MCP config:
   }
 }
 ```
+
+Restart Claude Desktop after saving. The `--no-build` flag assumes you have already run `dotnet build`; remove it if you want the CLI to build on each launch.
+
+---
+
+### VS Code (GitHub Copilot / agent mode)
+
+VS Code reads MCP server definitions from a `.vscode/mcp.json` file in your workspace, or from User Settings.
+
+**Option A — workspace file (recommended, checked into source control)**
+
+Create `.vscode/mcp.json` at the root of your workspace:
+
+```json
+{
+  "servers": {
+    "aiops-logs": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["run", "--project", "${workspaceFolder}/mcpserver", "--no-build"]
+    }
+  }
+}
+```
+
+`${workspaceFolder}` is resolved by VS Code at runtime, so the path works for every contributor without edits.
+
+**Option B — User Settings (applies to all workspaces)**
+
+Open **Settings → (JSON)** (`Ctrl+Shift+P` → *Open User Settings (JSON)*) and add:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "aiops-logs": {
+        "type": "stdio",
+        "command": "dotnet",
+        "args": ["run", "--project", "/absolute/path/to/aiops/mcpserver", "--no-build"]
+      }
+    }
+  }
+}
+```
+
+After saving, open a Copilot Chat panel, switch to **Agent** mode, and the `aiops-logs` server will appear in the tools list.
 
 ---
 
