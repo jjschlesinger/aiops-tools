@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AiOps.Agent</RootNamespace>
+    <AssemblyName>AiOps.Agent</AssemblyName>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AiOps.Agent.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Official Anthropic Claude SDK -->
+    <PackageReference Include="Anthropic" Version="12.23.0" />
+    <!-- MCP client — same version as the mcpserver project -->
+    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.1.25171.12" />
+    <!-- Hosting / background service / configuration -->
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
+    <!-- Configuration binder for .Get<T>() extension method -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+  </ItemGroup>
+
+</Project>
