@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option csharp_namespace = "Rag.Protos";
+
+package rag.v1;
+
+service RagQueryService {
+  // Bidirectional streaming: client sends questions, server streams context
+  // chunks followed by the final answer for each question.
+  rpc Query (stream QueryRequest) returns (stream QueryResponse);
+}
+
+message QueryRequest {
+  string question  = 1;
+  string session_id = 2;
+}
+
+message QueryResponse {
+  string session_id = 1;
+  oneof payload {
+    ContextChunk context_chunk = 2;
+    string        answer        = 3;
+  }
+}
+
+message ContextChunk {
+  string source  = 1;
+  string content = 2;
+  float  score   = 3;
+}
