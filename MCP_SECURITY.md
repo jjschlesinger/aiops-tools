@@ -109,7 +109,9 @@ Run all MCP servers in containers using stdio transport:
 - Server process lives only as long as the agent session — no persistent attack surface
 - No auth layer to misconfigure because there is no network surface to authenticate against
 
-**One container per MCP server.** A compromised server cannot touch other servers. Treat inter-server trust the same way microservices treat inter-service trust — zero by default.
+**Note on container topology:** stdio requires the agent and MCP server to share the same process namespace, which means they run in the same container. Separate containers require HTTP/SSE transport, reintroducing the network attack surface and auth complexity. The container itself is the isolation boundary from the host and other workloads — not a boundary between the agent and the server.
+
+**Run MCP servers as a less-privileged user and run the agent as a non-root user.** Within the shared container, each MCP server process should run as a separate, non-root user with the minimum permissions it needs. If the server process is compromised, it cannot read the agent's files or environment variables, write to paths it doesn't own, escalate to root without a container escape, or access credentials scoped to the agent's user.
 
 Mount volumes read-only unless the tool explicitly requires write access.
 
