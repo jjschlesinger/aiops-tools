@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="1100" height="620"
+     font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+
+  <defs>
+    <marker id="a-amber"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#d97706"/>
+    </marker>
+    <marker id="a-green"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="a-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="a-slate"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="a-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/>
+    </marker>
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="1100" height="620" fill="#f8fafc" rx="10"/>
+
+  <!-- ── Title ── -->
+  <text x="550" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">
+    AiOps — Agent · LLM · MCP · RAG Interaction
+  </text>
+
+  <!-- ════════════════════════════════════════════
+       BOXES
+       ════════════════════════════════════════════ -->
+
+  <!-- Anthropic Claude API (top-centre) -->
+  <rect x="392" y="52" width="316" height="72" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="550" y="76"  text-anchor="middle" font-size="13"   font-weight="700" fill="#92400e">Anthropic Claude API</text>
+  <text x="550" y="93"  text-anchor="middle" font-size="10.5" fill="#b45309">claude-opus-4-7  ·  HTTPS REST</text>
+  <text x="550" y="110" text-anchor="middle" font-size="10"   fill="#92400e">Multi-turn messages  ·  Tool schemas  ·  Tool results</text>
+
+  <!-- Agent (centre) -->
+  <rect x="368" y="220" width="364" height="128" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="550" y="246" text-anchor="middle" font-size="14"   font-weight="700" fill="#1e3a8a">Agent</text>
+  <text x="550" y="264" text-anchor="middle" font-size="10.5" fill="#1e40af">AiOps.Agent  ·  AgentOrchestrator</text>
+  <text x="550" y="283" text-anchor="middle" font-size="10"   fill="#1d4ed8">① Query RAG server for domain context</text>
+  <text x="550" y="300" text-anchor="middle" font-size="10"   fill="#1d4ed8">② Send enriched prompt + tool schemas → Claude</text>
+  <text x="550" y="317" text-anchor="middle" font-size="10"   fill="#1d4ed8">③ Dispatch tool_use blocks → MCP server</text>
+  <text x="550" y="334" text-anchor="middle" font-size="10"   fill="#1d4ed8">④ Return tool results to Claude  ·  repeat until end_turn</text>
+
+  <!-- MCP Server (left) -->
+  <rect x="90" y="220" width="222" height="128" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="201" y="246" text-anchor="middle" font-size="13"   font-weight="700" fill="#065f46">MCP Server</text>
+  <text x="201" y="264" text-anchor="middle" font-size="10.5" fill="#047857">AiOps.McpServer  ·  stdio</text>
+  <text x="201" y="283" text-anchor="middle" font-size="10"   fill="#059669">list_log_repositories</text>
+  <text x="201" y="300" text-anchor="middle" font-size="10"   fill="#059669">query_log_errors</text>
+  <text x="201" y="317" text-anchor="middle" font-size="10"   fill="#059669">generate_analysis_report</text>
+
+  <!-- Log Repositories (bottom-left) -->
+  <rect x="52" y="446" width="298" height="108" rx="10" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+  <text x="201" y="471" text-anchor="middle" font-size="12"   font-weight="700" fill="#1e293b">Log Repositories</text>
+  <text x="201" y="490" text-anchor="middle" font-size="10"   fill="#475569">Serilog NDJSON files</text>
+  <text x="201" y="507" text-anchor="middle" font-size="10"   fill="#475569">Azure Monitor  /  Log Analytics</text>
+  <text x="201" y="524" text-anchor="middle" font-size="10"   fill="#475569">SQL Server</text>
+
+  <!-- RAG gRPC Server (right) -->
+  <rect x="762" y="220" width="234" height="128" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="879" y="246" text-anchor="middle" font-size="13"   font-weight="700" fill="#4c1d95">RAG gRPC Server</text>
+  <text x="879" y="264" text-anchor="middle" font-size="10.5" fill="#6d28d9">rag-dotnet10  ·  :5151  HTTP/2</text>
+  <text x="879" y="283" text-anchor="middle" font-size="10"   fill="#7c3aed">RagQueryService.Query  (bidi stream)</text>
+  <text x="879" y="300" text-anchor="middle" font-size="10"   fill="#7c3aed">Ollama embed  →  Qdrant ANN search</text>
+  <text x="879" y="317" text-anchor="middle" font-size="10"   fill="#7c3aed">Streams ContextChunks  then  Answer</text>
+
+  <!-- Qdrant (bottom-right) -->
+  <rect x="762" y="446" width="234" height="108" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.8"/>
+  <text x="879" y="471" text-anchor="middle" font-size="12"   font-weight="700" fill="#312e81">Qdrant</text>
+  <text x="879" y="490" text-anchor="middle" font-size="10"   fill="#4338ca">Vector Store  ·  gRPC :6334</text>
+  <text x="879" y="507" text-anchor="middle" font-size="10"   fill="#4338ca">HNSW approx. nearest-neighbour</text>
+  <text x="879" y="524" text-anchor="middle" font-size="10"   fill="#4338ca">nomic-embed-text  ·  768 dimensions</text>
+
+  <!-- ════════════════════════════════════════════
+       ARROWS  (dashed = outgoing / request,
+                solid  = incoming / response)
+       ════════════════════════════════════════════ -->
+
+  <!-- ── Agent ↔ Anthropic (vertical) ── -->
+  <line x1="532" y1="220" x2="532" y2="126" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-amber)"/>
+  <line x1="568" y1="126" x2="568" y2="220" stroke="#d97706" stroke-width="1.8" marker-end="url(#a-amber)"/>
+  <!-- labels: left = outgoing, right = incoming -->
+  <rect x="372" y="160" width="154" height="15" rx="3" fill="#fffbeb" opacity="0.93"/>
+  <text x="449" y="171" text-anchor="middle" font-size="9.5" fill="#92400e">Prompt + tool schemas</text>
+  <rect x="574" y="160" width="164" height="15" rx="3" fill="#fffbeb" opacity="0.93"/>
+  <text x="656" y="171" text-anchor="middle" font-size="9.5" fill="#92400e">Response + tool_use blocks</text>
+
+  <!-- ── Agent ↔ MCP (horizontal) ── -->
+  <line x1="368" y1="268" x2="314" y2="268" stroke="#059669" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-green)"/>
+  <line x1="314" y1="284" x2="368" y2="284" stroke="#059669" stroke-width="1.8" marker-end="url(#a-green)"/>
+  <!-- labels above/below -->
+  <rect x="315" y="251" width="112" height="15" rx="3" fill="#d1fae5" opacity="0.93"/>
+  <text x="371" y="262" text-anchor="middle" font-size="9.5" fill="#065f46">Tool call  (stdio)</text>
+  <rect x="315" y="287" width="112" height="15" rx="3" fill="#d1fae5" opacity="0.93"/>
+  <text x="371" y="298" text-anchor="middle" font-size="9.5" fill="#065f46">Tool result JSON</text>
+
+  <!-- ── MCP ↔ Log Repos (vertical) ── -->
+  <line x1="189" y1="348" x2="189" y2="444" stroke="#475569" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-slate)"/>
+  <line x1="213" y1="444" x2="213" y2="350" stroke="#475569" stroke-width="1.8" marker-end="url(#a-slate)"/>
+  <!-- labels right of arrows -->
+  <rect x="220" y="379" width="116" height="15" rx="3" fill="#f1f5f9" opacity="0.93"/>
+  <text x="278" y="390" text-anchor="middle" font-size="9.5" fill="#374151">QueryErrorsAsync</text>
+  <rect x="220" y="397" width="116" height="15" rx="3" fill="#f1f5f9" opacity="0.93"/>
+  <text x="278" y="408" text-anchor="middle" font-size="9.5" fill="#374151">Log entries  (JSON)</text>
+
+  <!-- ── Agent ↔ RAG (horizontal) ── -->
+  <line x1="732" y1="268" x2="760" y2="268" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-purple)"/>
+  <line x1="760" y1="284" x2="732" y2="284" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#a-purple)"/>
+  <!-- labels above/below -->
+  <rect x="733" y="251" width="158" height="15" rx="3" fill="#ede9fe" opacity="0.93"/>
+  <text x="812" y="262" text-anchor="middle" font-size="9.5" fill="#4c1d95">QueryRequest  (gRPC stream)</text>
+  <rect x="733" y="287" width="158" height="15" rx="3" fill="#ede9fe" opacity="0.93"/>
+  <text x="812" y="298" text-anchor="middle" font-size="9.5" fill="#4c1d95">ContextChunks + Answer</text>
+
+  <!-- ── RAG ↔ Qdrant (vertical) ── -->
+  <line x1="867" y1="348" x2="867" y2="444" stroke="#4f46e5" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-indigo)"/>
+  <line x1="891" y1="444" x2="891" y2="350" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-indigo)"/>
+  <!-- labels right of arrows -->
+  <rect x="898" y="379" width="104" height="15" rx="3" fill="#eef2ff" opacity="0.93"/>
+  <text x="950" y="390" text-anchor="middle" font-size="9.5" fill="#312e81">Embed + ANN search</text>
+  <rect x="898" y="397" width="104" height="15" rx="3" fill="#eef2ff" opacity="0.93"/>
+  <text x="950" y="408" text-anchor="middle" font-size="9.5" fill="#312e81">Vector results</text>
+
+  <!-- ════════════════════════════════════════════
+       LEGEND
+       ════════════════════════════════════════════ -->
+  <rect x="20" y="568" width="1060" height="42" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+
+  <line x1="34"  y1="589" x2="66"  y2="589" stroke="#64748b" stroke-width="1.8" stroke-dasharray="6,3"/>
+  <text x="72"  y="593" font-size="9.5" fill="#475569">Request / outgoing</text>
+
+  <line x1="190" y1="589" x2="222" y2="589" stroke="#64748b" stroke-width="1.8"/>
+  <text x="228" y="593" font-size="9.5" fill="#475569">Response / result</text>
+
+  <text x="550" y="585" text-anchor="middle" font-size="9.5" font-weight="600" fill="#374151">
+    ① – ④ execution order per analysis run
+  </text>
+  <text x="550" y="600" text-anchor="middle" font-size="9.5" fill="#475569">
+    MCP server launched as stdio subprocess  ·  RAG server is a standalone gRPC service  ·  Qdrant is a separate vector-store process
+  </text>
+
+</svg>
