@@ -25,7 +25,7 @@ The attack surface is semantic, not syntactic. You can validate a JWT. You canno
 ## The Attack Surface — Five Layers
 
 ### 1. Prompt Injection via Tool Results
-The most common and dangerous attack class. An agent calls a tool that fetches external content — a web page, an email, a document — and returns it as the tool result. That content contains adversarial instructions. Because the agent processes tool results as trusted context, it complies. The agent cannot distinguish between "data I fetched" and "instruction I received." This is not resolved by containerization — containers stop lateral movement after execution, not semantic manipulation of the model.
+The most common and dangerous attack class. An agent calls a tool that fetches external content — a web page, an email, a document — and returns it as the tool result. That content contains adversarial instructions. Because the agent processes tool results as trusted context, it complies. The agent cannot distinguish between "data I fetched" and "instruction I received." .
 
 ### 2. Tool Poisoning (Supply Chain)
 MCP tool descriptions enter the agent's context window as trusted content. An attacker who controls a tool description — through a malicious or compromised third-party server — can embed hidden instructions the LLM reads and acts on. The official spec acknowledges this: *"descriptions of tool behavior such as annotations should be considered untrusted, unless obtained from a trusted server."*
@@ -94,28 +94,6 @@ Treat MCP servers like Docker images from untrusted registries:
 - Control the base image and all dependencies
 - Maintain an SBOM for every server including upstream dependencies
 
-### Container + stdio Architecture
-
-Run all MCP servers in containers using stdio transport:
-
-**What the container boundary provides:**
-- Tool calls can only touch explicitly mounted filesystem paths — path traversal hits the container wall, not the host
-- No network egress unless explicitly opened — a compromised server cannot phone home or pivot to your internal network
-- Process isolation — the server cannot inspect other processes, credentials, or environment variables outside the container
-- Bounded blast radius — worst case is a destroyed container, not a compromised host
-
-**What stdio provides over HTTP/SSE:**
-- No open port for external actors to probe
-- Server process lives only as long as the agent session — no persistent attack surface
-- No auth layer to misconfigure because there is no network surface to authenticate against
-
-**Note on container topology:** stdio requires the agent and MCP server to share the same process namespace, which means they run in the same container. Separate containers require HTTP/SSE transport, reintroducing the network attack surface and auth complexity. The container itself is the isolation boundary from the host and other workloads — not a boundary between the agent and the server.
-
-**Run MCP servers as a less-privileged user and run the agent as a non-root user.** Within the shared container, each MCP server process should run as a separate, non-root user with the minimum permissions it needs. If the server process is compromised, it cannot read the agent's files or environment variables, write to paths it doesn't own, escalate to root without a container escape, or access credentials scoped to the agent's user.
-
-Mount volumes read-only unless the tool explicitly requires write access.
-
-**What this does not solve:** Prompt injection via tool results is fully alive inside a container. Treat all tool results as untrusted input — the same way you treat user input from the internet — before the model acts on them.
 
 ### Thin, Scoped Wrappers Over Third-Party APIs
 
@@ -127,7 +105,7 @@ Instead of connecting a broad third-party MCP server, build a thin wrapper expos
 - Require explicit confirmation flows for any operation with side effects
 - Scope to the minimum necessary permissions
 
-Tools like Claude Code can generate a production-quality thin MCP wrapper in a single session given a clear specification of which API endpoints to expose and what constraints to enforce.
+AI-assisted dev tools can generate a production-quality thin MCP wrapper in a single session given a clear specification of which API endpoints to expose and what constraints to enforce.
 
 ### Pre-Deploy Checklist
 
@@ -161,6 +139,6 @@ If you must run remote MCP servers, implement OAuth 2.1 + PKCE with:
 
 ## The Bottom Line
 
-The engineers and teams who establish disciplined MCP security practices now — before it's mandated by compliance frameworks or forced by a significant breach — will have a substantial advantage. The infrastructure investment is modest: containerized stdio servers, private registries, thin scoped wrappers, and audit tooling. The security posture it creates is significantly stronger than what most enterprises will have for the next two years.
+The engineers and teams who establish disciplined MCP security practices now — before it's mandated by compliance frameworks or forced by a significant breach — will have a substantial advantage. The infrastructure investment is modest: private registries, thin scoped wrappers, and audit tooling. The security posture it creates is significantly stronger than what most enterprises will have for the next two years.
 
-Treat every MCP server like infrastructure, not a dependency. Build it, audit it, own it, run it in a container, and treat everything it returns as untrusted input.
+Treat every MCP server like infrastructure, not a dependency. Build it, audit it, own it, run it and treat everything it returns as untrusted input. And before any of that — scope it. The smallest, most specifically scoped tool surface is the most defensible one.

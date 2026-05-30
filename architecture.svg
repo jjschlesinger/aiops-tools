@@ -70,12 +70,19 @@
   <text x="879" y="300" text-anchor="middle" font-size="10"   fill="#7c3aed">Ollama embed  →  Qdrant ANN search</text>
   <text x="879" y="317" text-anchor="middle" font-size="10"   fill="#7c3aed">Streams ContextChunks  then  Answer</text>
 
+  <!-- Ollama (bottom-centre) -->
+  <rect x="400" y="446" width="220" height="108" rx="10" fill="#fdf4ff" stroke="#a21caf" stroke-width="1.8"/>
+  <text x="510" y="471" text-anchor="middle" font-size="12"   font-weight="700" fill="#701a75">Ollama</text>
+  <text x="510" y="490" text-anchor="middle" font-size="10.5" fill="#a21caf">Embedding Server  ·  :11434</text>
+  <text x="510" y="507" text-anchor="middle" font-size="10"   fill="#86198f">nomic-embed-text  ·  768-dim</text>
+  <text x="510" y="524" text-anchor="middle" font-size="10"   fill="#86198f">Local inference  ·  no API key</text>
+
   <!-- Qdrant (bottom-right) -->
   <rect x="762" y="446" width="234" height="108" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.8"/>
   <text x="879" y="471" text-anchor="middle" font-size="12"   font-weight="700" fill="#312e81">Qdrant</text>
   <text x="879" y="490" text-anchor="middle" font-size="10"   fill="#4338ca">Vector Store  ·  gRPC :6334</text>
   <text x="879" y="507" text-anchor="middle" font-size="10"   fill="#4338ca">HNSW approx. nearest-neighbour</text>
-  <text x="879" y="524" text-anchor="middle" font-size="10"   fill="#4338ca">nomic-embed-text  ·  768 dimensions</text>
+  <text x="879" y="524" text-anchor="middle" font-size="10"   fill="#4338ca">768-dim vectors</text>
 
   <!-- ════════════════════════════════════════════
        ARROWS  (dashed = outgoing / request,
@@ -117,6 +124,12 @@
   <text x="812" y="262" text-anchor="middle" font-size="9.5" fill="#4c1d95">QueryRequest  (gRPC stream)</text>
   <rect x="733" y="287" width="158" height="15" rx="3" fill="#ede9fe" opacity="0.93"/>
   <text x="812" y="298" text-anchor="middle" font-size="9.5" fill="#4c1d95">ContextChunks + Answer</text>
+
+  <!-- ── RAG ↔ Ollama (diagonal) ── -->
+  <line x1="840" y1="348" x2="620" y2="444" stroke="#a21caf" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-purple)"/>
+  <line x1="612" y1="444" x2="830" y2="350" stroke="#a21caf" stroke-width="1.8" marker-end="url(#a-purple)"/>
+  <rect x="688" y="383" width="118" height="15" rx="3" fill="#fdf4ff" opacity="0.95"/>
+  <text x="747" y="394" text-anchor="middle" font-size="9.5" fill="#701a75">Embed request / vector</text>
 
   <!-- ── RAG ↔ Qdrant (vertical) ── -->
   <line x1="867" y1="348" x2="867" y2="444" stroke="#4f46e5" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#a-indigo)"/>

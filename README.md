@@ -1,130 +1,96 @@
-# AiOps
+# AiOps — LLM Integration Portfolio
 
-AI-assisted operations tooling. The repo contains an MCP log-analysis server, a Claude-powered agent that drives it, and the tests for both.
+A mono-repo demonstrating real-world LLM integration patterns in **.NET 10**, built using Claude Code driven by a highly experienced engineer. Every architecture decision — MCP server design, agentic tool-use loops, gRPC streaming RAG pipelines — was driven by deep domain knowledge rather than generated from boilerplate prompts. This repo exists to show that the quality ceiling of AI-assisted development is set by the engineer driving it.
+
+---
+
+## Architecture
+
+![AiOps system interaction diagram](architecture.svg)
+
+The diagram shows how all four components interact at runtime:
+
+- The **Agent** enriches its prompt with domain context from the **RAG server**, then drives a multi-turn tool-use loop with the **Anthropic Claude API**
+- Each `tool_use` block Claude returns is dispatched to the **MCP Server** over stdio; results feed back into the next Claude turn
+- The **MCP Server** queries **Log Repositories** (Serilog files, SQL Server, Azure Monitor) and returns structured data or a full Markdown report
+- The **RAG gRPC Server** uses **Ollama** embeddings and **Qdrant** vector search to ground agent prompts in relevant documentation
 
 ---
 
 ## Projects
 
+| Project | Description |
+|---|---|
+| [`mcpserver/`](mcpserver/) | .NET 10 MCP server — exposes log-query tools over stdio |
+| [`mcpserver.tests/`](mcpserver.tests/) | xUnit tests for the MCP server tools and repositories |
+| [`agent/`](agent/) | .NET 10 Claude agent — autonomous agentic loop driving the MCP server |
+| [`agent.tests/`](agent.tests/) | xUnit unit tests for the agent (72 tests, fully mocked) |
+| [`rag-dotnet10/`](rag-dotnet10/) | .NET 10 RAG gRPC service — bidirectional streaming, Qdrant + Ollama + Claude |
+
+---
+
 ### [`mcpserver/`](mcpserver/)
 
-**AiOps MCP Server** — a [Model Context Protocol](https://modelcontextprotocol.io) server written in **.NET 10** that exposes structured log-querying tools over stdio. An LLM (or any MCP client) connects to it, calls the tools to retrieve errors and exceptions from configured repositories, and generates Markdown analysis reports with fix recommendations.
+A [Model Context Protocol](https://modelcontextprotocol.io) server that gives an LLM structured access to application log repositories. It filters, structures, and aggregates log data before returning it to the model — the model sees patterns and summaries, not raw log dumps.
 
-| | |
-|---|---|
-| **Runtime** | .NET 10 |
-| **Transport** | stdio (MCP standard) |
-| **Key packages** | `ModelContextProtocol`, `Azure.Monitor.Query`, `Dapper` |
-
-#### Tools exposed
+**Tools exposed:**
 
 | Tool | Description |
 |---|---|
-| `list_log_repositories` | Discover all configured repositories |
-| `query_log_errors` | Query a repository and return structured JSON for interactive exploration |
-| `generate_analysis_report` | Query a repository and produce a full Markdown report with timelines, grouped stack traces, investigation hints, and a fix-recommendation template |
+| `list_log_repositories` | Discover all configured log sources |
+| `query_log_errors` | Return structured JSON for interactive exploration |
+| `generate_analysis_report` | Produce a full Markdown report with timelines, grouped stack traces, and fix-recommendation template |
 
-#### Log repository backends
+**Log backends:** Serilog CLEF files · SQL Server / PostgreSQL / MySQL / SQLite · Azure Monitor Log Analytics
 
-| Implementation | Config `Type` | Backend |
-|---|---|---|
-| `SerilogFileLogRepository` | `SerilogFile` | Serilog Compact Log Event Format (CLEF) files — one JSON object per line |
-| `SqlLogRepository` | `Sql` | Any ADO.NET-compatible database via `DbConnection` + `DbProviderFactory` (SQL Server, PostgreSQL, MySQL, SQLite) |
-| `AzureMonitorLogRepository` | `AzureMonitor` | Azure Monitor Log Analytics workspace via Kusto — supports `AppExceptions` and `AppTraces` tables |
-
-#### Quick start
-
-```bash
-cd mcpserver
-dotnet restore
-dotnet run          # communicates over stdin/stdout
-```
-
-Configure repositories in `mcpserver/appsettings.json` before running.
+See [`mcpserver/README.md`](mcpserver/README.md) for full configuration and security guidance.
 
 ---
 
 ### [`agent/`](agent/)
 
-**AiOps Agent** — a **.NET 10** console app that runs Claude (via the [Anthropic C# SDK](https://github.com/anthropics/anthropic-sdk-csharp)) as an autonomous log-analysis agent. It spawns the `mcpserver` as a subprocess, drives an agentic tool-use loop, and writes a structured JSON result file after each run.
+A .NET 10 console app that runs Claude as an autonomous log-analysis agent. It spawns the MCP server as a subprocess, drives a tool-use loop until the model returns `end_turn`, and writes a structured JSON result file for each run.
 
-| | |
-|---|---|
-| **Runtime** | .NET 10 |
-| **LLM** | Claude (configurable model, default `claude-opus-4-5-20250929`) |
-| **Key packages** | `Anthropic` SDK, `ModelContextProtocol`, `Microsoft.Extensions.Hosting` |
+Supports **one-shot mode** (useful in CI) and **periodic mode** (runs on a configurable schedule).
 
-#### How it works
-
-1. Spawns the MCP server as a stdio subprocess
-2. Discovers available tools via `ListToolsAsync`
-3. Sends a log-analysis prompt to Claude together with the tool schemas
-4. Dispatches every `tool_use` block Claude returns back to the MCP server
-5. Feeds results into the next Claude turn until the model stops requesting tools
-6. Writes an `analysis_YYYYMMDD_HHmmss_<runId>.json` result file containing the run metadata, every tool call record, and the final Markdown report
-
-#### Modes
-
-| `IntervalMinutes` | Behaviour |
-|---|---|
-| `> 0` | Periodic — reruns on the configured schedule |
-| `≤ 0` | One-shot — runs once on startup then exits (useful for CI / scripts) |
-
-#### Quick start
-
-```bash
-cd agent
-# set your Anthropic API key
-export ANTHROPIC_API_KEY=sk-ant-api03-...   # or $env:ANTHROPIC_API_KEY on Windows
-
-dotnet restore
-dotnet run
-```
-
-Results are written to the `results/` directory by default. Configure the agent in `agent/appsettings.json`.
+See [`agent/README.md`](agent/README.md) for setup and configuration.
 
 ---
 
-### [`agent.tests/`](agent.tests/)
+### [`rag-dotnet10/`](rag-dotnet10/)
 
-**AiOps Agent Unit Tests** — an xUnit test project (72 tests) that covers the agent project in isolation. The Anthropic + MCP infrastructure is replaced by mocks so the tests run without any network calls or live processes.
+A headless gRPC service implementing a RAG pipeline over a Qdrant vector store. AI agents open a bidirectional stream, send questions, and receive streamed context chunks followed by a Claude-generated answer for each question.
 
-| | |
-|---|---|
-| **Framework** | xUnit 2.9, FluentAssertions 6, Moq 4 |
-| **Coverage** | `AgentConfig`, `AnalysisRun` / `ToolCallRecord`, `LogAnalysisBackgroundService`, `AgentOrchestrator` failure paths, internal helpers (`BuildToolArgs`, `ExtractText`) |
+**Pipeline:** Ollama embed → Qdrant ANN search → Claude generation → streamed response
+
+See [`rag-dotnet10/README.md`](rag-dotnet10/README.md) for Qdrant and Ollama setup instructions.
+
+---
+
+### [`agent.tests/`](agent.tests/) · [`mcpserver.tests/`](mcpserver.tests/)
+
+xUnit test projects covering both core projects. The Anthropic SDK and MCP infrastructure are replaced by mocks so the 72 agent tests run without network calls or live processes. The MCP server tests cover log repository implementations, report generation, and tool wiring.
 
 ```bash
-cd agent.tests
-dotnet test
+dotnet test          # from repo root — runs all tests via the solution
 ```
 
 ---
 
-### [`mcpserver.tests/`](mcpserver.tests/)  *(if present)*
+## End-to-end integration test
 
-xUnit tests for the MCP server tools and log-repository implementations.
-
----
-
-## Integration test
-
-[`Test-AgentIntegration.ps1`](Test-AgentIntegration.ps1) runs a full end-to-end test against the real Anthropic API:
-
-1. Builds both `mcpserver` and `agent`
-2. Runs the agent in one-shot mode
-3. Asserts ~18 properties of the resulting JSON file (run ID, timestamps, model, token counts, tool calls made, `list_log_repositories` invoked, final report structure)
-
-**Prerequisites:** PowerShell 7+, .NET SDK 10, a valid `ANTHROPIC_API_KEY`.
+[`Test-AgentIntegration.ps1`](Test-AgentIntegration.ps1) exercises the real Anthropic API end-to-end: builds both projects, runs the agent in one-shot mode, and asserts ~18 properties of the resulting JSON output file.
 
 ```powershell
 $env:ANTHROPIC_API_KEY = "sk-ant-api03-..."
 .\Test-AgentIntegration.ps1
 
-# Common flags
+# Options
 .\Test-AgentIntegration.ps1 -SkipBuild -KeepOutput -TimeoutSeconds 120
 .\Test-AgentIntegration.ps1 -Model "claude-3-5-haiku-20241022" -MaxTokensPerTurn 2048
 ```
+
+**Prerequisites:** PowerShell 7+, .NET SDK 10, valid `ANTHROPIC_API_KEY`.
 
 ---
 
@@ -132,18 +98,38 @@ $env:ANTHROPIC_API_KEY = "sk-ant-api03-..."
 
 ```
 aiops/
-├── README.md
-├── AiOps.McpServer.sln             # solution — includes all four projects
-├── Test-AgentIntegration.ps1       # PowerShell end-to-end integration test
-├── .gitignore
-├── mcpserver/                      # .NET 10 MCP server
-│   ├── AiOps.McpServer.csproj
-│   └── appsettings.json
-├── mcpserver.tests/                # xUnit tests for the MCP server
-│   └── AiOps.McpServer.Tests.csproj
-├── agent/                          # .NET 10 Claude agent
-│   ├── AiOps.Agent.csproj
-│   └── appsettings.json
-└── agent.tests/                    # xUnit tests for the agent (72 tests)
-    └── AiOps.Agent.Tests.csproj
+├── README.md                           # this file
+├── MCP_SECURITY.md                     # deep dive: MCP security threat model and mitigations
+├── architecture.svg                    # system-interaction diagram
+├── AiOps.McpServer.sln                 # solution — all four projects
+├── Test-AgentIntegration.ps1           # PowerShell end-to-end integration test
+├── mcpserver/                          # .NET 10 MCP server
+├── mcpserver.tests/                    # xUnit tests for the MCP server
+├── agent/                              # .NET 10 Claude agent
+├── agent.tests/                        # xUnit tests for the agent (72 tests)
+└── rag-dotnet10/                       # .NET 10 RAG gRPC service
 ```
+
+---
+
+## MCP Security
+
+[`MCP_SECURITY.md`](MCP_SECURITY.md) is a standalone deep dive into the MCP security landscape as of 2026: the threat model (prompt injection, tool poisoning, auth gaps, path traversal, privilege escalation via chaining), what the official spec says about its own limitations, the historical parallel to other ecosystem security failures, and a concrete defensive architecture — including the Docker image pattern, thin scoped wrappers, pre-deploy checklists, and runtime controls.
+
+The core position: **only connect to MCP servers you built and control.** The only way to have a trusted server, as the spec defines it, is to be the one who built and operates it.
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Runtime | .NET 10 (C# 13) |
+| LLM | Anthropic Claude (via `Anthropic` C# SDK) |
+| MCP | `ModelContextProtocol` SDK (stdio transport) |
+| gRPC | `Grpc.AspNetCore` + Kestrel HTTP/2 |
+| Vector store | Qdrant (via `Qdrant.Client` + Semantic Kernel connector) |
+| Embeddings | Ollama (`nomic-embed-text`, 768-dim) |
+| Azure integration | `Azure.Monitor.Query` + `Azure.Identity` (`DefaultAzureCredential`) |
+| SQL access | Dapper + `Microsoft.Data.SqlClient` |
+| Testing | xUnit 2.9 · FluentAssertions 6 · Moq 4 |
