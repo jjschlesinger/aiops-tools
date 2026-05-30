@@ -22,6 +22,12 @@ builder.Logging.AddFilter("System", LogLevel.Warning);
 
 // ── Services ─────────────────────────────────────────────────────────────────
 builder.Services
+    .AddSingleton<AiOps.Agent.Services.RagClient>(sp =>
+    {
+        var cfg    = sp.GetRequiredService<AgentConfig>();
+        var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<AiOps.Agent.Services.RagClient>>();
+        return new AiOps.Agent.Services.RagClient(cfg.RagGrpcAddress, logger);
+    })
     .AddSingleton<IAgentOrchestrator, AgentOrchestrator>()
     .AddHostedService<LogAnalysisBackgroundService>();
 

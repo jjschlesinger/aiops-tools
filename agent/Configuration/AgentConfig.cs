@@ -39,4 +39,7 @@ public sealed class AgentConfig
 
     /// <summary>Maximum tokens Claude may use in a single response turn.</summary>
     public int MaxTokensPerTurn { get; set; } = 8192;
+
+    /// <summary>Base address of the RAG gRPC server (e.g. "https://localhost:7200").</summary>
+    public string RagGrpcAddress { get; set; } = "https://localhost:7200";
 }
