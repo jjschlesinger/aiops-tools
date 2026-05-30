@@ -78,9 +78,9 @@ The forcing function will be enterprise procurement and liability — not vendor
 
 ### The Core Posture: Build and Own Your Servers
 
-**Only connect to MCP servers you built and control.** The only way to have a trusted server, as the spec defines it, is to be the one who built and operates it. Third-party MCP servers introduce every layer of the attack surface above, with no audit trail you control.
+**Only connect to MCP servers you own and control.** That means servers you built from scratch, or open-source servers you have cloned, audited, built yourself, and deployed — not pulled from a registry and run blindly. The spec's definition of a "trusted server" is one you control end-to-end; the only path there is owning the full lifecycle. Third-party servers you run as-is introduce every layer of the attack surface above, with no audit trail you control.
 
-This requires open source as a minimum bar for any third-party server you evaluate. Any vendor shipping a closed-source MCP server is asking you to trust a black box executing in your environment with access to your agent's context. Even then, open source is a floor, not a guarantee.
+Any vendor shipping a closed-source MCP server is asking you to trust a black box executing in your environment with access to your agent's context. Open source is a minimum bar, not a guarantee — but it is the prerequisite for the audit that makes trust possible.
 
 ### The Docker Image Pattern
 
@@ -115,6 +115,19 @@ AI-assisted dev tools can generate a production-quality thin MCP wrapper in a si
 - Require code review for any new server added to an agent's allowed list
 - Maintain an SBOM including transitive dependencies
 - Subscribe to the Vulnerable MCP Project and GitHub Security Advisories for the MCP ecosystem
+
+### Don't Sanitize LLM Input — Contain the Agent
+
+The instinct to sanitize data before it reaches the model is understandable but misapplied. You cannot reliably sanitize natural language for prompt injection. The attack surface is semantic: adversarial instructions can be rephrased, encoded, spread across multiple tool results, or embedded in ways no static filter will catch consistently. Attempting to sanitize input shifts your security posture from a solvable infrastructure problem to an unsolvable content-moderation problem.
+
+The correct mental model is containment, not filtering. Assume the agent will be manipulated at some point. Design so that when it is, the blast radius is bounded:
+
+- **Contain at the process boundary.** Run the agent in a container with no credentials, no filesystem access, and no network egress beyond the specific endpoints it needs. A manipulated agent that cannot reach anything cannot do anything.
+- **Contain at the tool boundary.** Tools are the only way an agent acts on the world. Keep tools narrow, scoped to read-only where possible, and require explicit human confirmation for any tool with side effects. The agent's ability to cause harm is exactly equal to the sum of its tools' capabilities.
+- **Contain at the credential boundary.** The agent process should hold no credentials beyond what its current task requires. Secrets should be injected per-session, scoped to minimum permissions, and rotated. A compromised agent with a read-only Log Analytics token is an annoyance; the same agent with a service principal that has Contributor on your subscription is a breach.
+- **Contain at the output boundary.** Log every tool call with its full arguments and results. If an agent is manipulated, your audit trail is how you reconstruct what happened and bound the damage. Without it you have no incident.
+
+Input sanitization is not worthless — scanning tool results for credential patterns or known malicious strings catches low-effort attacks cheaply. But it is a defense-in-depth measure layered on top of containment, not a substitute for it. If sanitization fails, containment limits the damage. If containment fails, no amount of sanitization saves you.
 
 ### Runtime Controls
 
